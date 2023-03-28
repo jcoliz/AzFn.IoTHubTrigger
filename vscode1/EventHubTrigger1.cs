@@ -12,7 +12,11 @@ namespace Company.Function
     public static class EventHubTrigger1
     {
         [FunctionName("EventHubTrigger1")]
-        public static async Task Run([EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR")] EventData[] events, ILogger log)
+        public static async Task Run
+        (
+            [EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR")] EventData[] events, 
+            ILogger log
+        )
         {
             var exceptions = new List<Exception>();
 
@@ -21,11 +25,9 @@ namespace Company.Function
                 try
                 {
                     // Replace these two lines with your processing logic.
-                    log.LogInformation($"*** C# Event Hub trigger function processed a message: {eventData.EventBody}");
+                    log.LogInformation($"*** C# Event Hub trigger function processed message #{eventData.SequenceNumber}, enqueued at {eventData.EnqueuedTime}");
 
-                    // Deserialize to dictionary
                     var body = eventData.EventBody.ToObjectFromJson<Dictionary<string, object>>();
-
                     foreach (var kvp in body)
                         log.LogInformation($"{kvp.Key}: {kvp.Value}");
 
