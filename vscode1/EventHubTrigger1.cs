@@ -23,8 +23,14 @@ namespace Company.Function
                     // Replace these two lines with your processing logic.
                     log.LogInformation($"*** C# Event Hub trigger function processed a message: {eventData.EventBody}");
 
-                    foreach (var kvp in eventData.Properties)
+                    // Deserialize to dictionary
+                    var body = eventData.EventBody.ToObjectFromJson<Dictionary<string, object>>();
+
+                    foreach (var kvp in body)
                         log.LogInformation($"{kvp.Key}: {kvp.Value}");
+
+                    foreach (var kvp in eventData.Properties)
+                        log.LogInformation($"P.{kvp.Key}: {kvp.Value}");
 
                     foreach (var kvp in eventData.SystemProperties)
                         log.LogInformation($"SP.{kvp.Key}: {kvp.Value}");
