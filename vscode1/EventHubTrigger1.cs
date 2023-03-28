@@ -12,7 +12,7 @@ namespace Company.Function
     public static class EventHubTrigger1
     {
         [FunctionName("EventHubTrigger1")]
-        public static async Task Run([EventHubTrigger("iothub-ehub-iothub-sp4-23802764-f2416875e5", Connection = "EVENTCSTR")] EventData[] events, ILogger log)
+        public static async Task Run([EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR")] EventData[] events, ILogger log)
         {
             var exceptions = new List<Exception>();
 
