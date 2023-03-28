@@ -14,7 +14,7 @@ namespace Company.Function
         [FunctionName("EventHubTrigger1")]
         public static async Task Run
         (
-            [EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR")] EventData[] events, 
+            [EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR", ConsumerGroup = "%HUBCG%")] EventData[] events, 
             ILogger log
         )
         {
