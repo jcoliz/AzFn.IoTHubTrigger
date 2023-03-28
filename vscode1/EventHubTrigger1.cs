@@ -21,7 +21,14 @@ namespace Company.Function
                 try
                 {
                     // Replace these two lines with your processing logic.
-                    log.LogInformation($"C# Event Hub trigger function processed a message: {eventData.EventBody}");
+                    log.LogInformation($"*** C# Event Hub trigger function processed a message: {eventData.EventBody}");
+
+                    foreach (var kvp in eventData.Properties)
+                        log.LogInformation($"{kvp.Key}: {kvp.Value}");
+
+                    foreach (var kvp in eventData.SystemProperties)
+                        log.LogInformation($"SP.{kvp.Key}: {kvp.Value}");
+
                     await Task.Yield();
                 }
                 catch (Exception e)
