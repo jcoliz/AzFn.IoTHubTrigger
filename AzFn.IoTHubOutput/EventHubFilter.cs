@@ -14,6 +14,7 @@ namespace Company.Function
         public static async Task Run
         (
             [EventHubTrigger("%EVENTPATH%", Connection = "EVENTCSTR", ConsumerGroup = "%HUBCG%")] EventData[] events, 
+            [EventHub("%EHOUTPATH%", Connection = "EHOUTCSTR")]IAsyncCollector<EventData> outputEvents,
             ILogger log
         )
         {
@@ -34,6 +35,20 @@ namespace Company.Function
 
                     foreach (var kvp in eventData.SystemProperties)
                         log.LogInformation($"SP.{kvp.Key}: {kvp.Value}");
+
+                    // Only output events with a "temperature" in their body
+                    if (body.ContainsKey("temperature") && eventData.SystemProperties.ContainsKey("dt-subject"))
+                    {
+                        var outbody = new Dictionary<string, object>();
+                        outbody["temperature"] = body["temperature"];
+                        outbody["dt-subject"] = eventData.SystemProperties["dt-subject"];
+
+                        var outjson = System.Text.Json.JsonSerializer.Serialize(outbody);
+                        var outevent = new EventData(outjson);
+                        await outputEvents.AddAsync(outevent);
+
+                        log.LogInformation("Sent event to output sink");
+                    }
 
                     await Task.Yield();
                 }
