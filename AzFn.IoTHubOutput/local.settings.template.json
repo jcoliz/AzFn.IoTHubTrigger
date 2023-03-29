@@ -1,0 +1,12 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+      "AzureWebJobsStorage": "Replace with $env:STORCSTR output from deployment",
+      "EHOUTPATH": "Replace with $env:EHOUTPATH output from deployment",
+      "EHOUTCSTR": "Replace with $env:EHOUTCSTR output from deployment",
+      "EVENTPATH": "Replace with $env:EVENTPATH output from deployment",
+      "EVENTCSTR": "Replace with $env:EVENTCSTR output from deployment",
+      "HUBCG": "Replace with $env:HUBCG output from deployment",
+      "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    }
+  }
