@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzFn.IoTHubTrigger", "AzFn.IoTHubTrigger\AzFn.IoTHubTrigger.csproj", "{66EE66A5-BA10-4C1A-B186-B5BCB62F64D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzFn.IoTHubOutput", "AzFn.IoTHubOutput\AzFn.IoTHubOutput.csproj", "{A32C40B4-E3E4-40E4-AD1C-0A709EB5B3F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{66EE66A5-BA10-4C1A-B186-B5BCB62F64D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66EE66A5-BA10-4C1A-B186-B5BCB62F64D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66EE66A5-BA10-4C1A-B186-B5BCB62F64D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A32C40B4-E3E4-40E4-AD1C-0A709EB5B3F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A32C40B4-E3E4-40E4-AD1C-0A709EB5B3F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A32C40B4-E3E4-40E4-AD1C-0A709EB5B3F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A32C40B4-E3E4-40E4-AD1C-0A709EB5B3F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
