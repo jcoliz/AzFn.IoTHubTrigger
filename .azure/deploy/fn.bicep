@@ -1,3 +1,8 @@
+//
+// Deploys an Azure Functions app
+// https://learn.microsoft.com/en-us/azure/azure-functions/
+//
+
 @description('Descriptor for this resource')
 param prefix string = 'fn'
 
@@ -24,6 +29,9 @@ param fnRuntime string = 'dotnet'
 @description('Details for required storage resource (name/id)')
 param storage object
 
+@description('Optional application settings environment vars')
+param configuration array = []
+
 resource hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: 'farm-${suffix}'
   location: location
@@ -34,8 +42,37 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
 }
 
 var storcstr = 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, '2022-09-01').keys[0].value}'
+var appsettings = concat(
+  [
+    {
+      name: 'AzureWebJobsStorage'
+      value: storcstr
+    }
+    {
+      name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+      value: storcstr
+    }
+    {
+      name: 'WEBSITE_CONTENTSHARE'
+      value: toLower('${prefix}-${suffix}')
+    }
+    {
+      name: 'FUNCTIONS_EXTENSION_VERSION'
+      value: '~4'
+    }
+    {
+      name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+      value: applicationInsights.properties.InstrumentationKey
+    }
+    {
+      name: 'FUNCTIONS_WORKER_RUNTIME'
+      value: fnRuntime
+    }
+  ],
+  configuration
+)
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: '${prefix}-${suffix}'
   location: location
   kind: 'functionapp'
@@ -45,54 +82,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: storcstr
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: storcstr
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower('${prefix}-${suffix}')
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: applicationInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: fnRuntime
-        }
-        /*
-        {
-          name: 'EVENTCSTR'
-          value: 'Endpoint=${reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.endpoint};SharedAccessKeyName=iothubowner;SharedAccessKey=${listKeys(iotHub.id, '2021-07-02').value[0].primaryKey};EntityPath=${reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.path}'
-        }
-        {
-          name: 'EVENTPATH'
-          value: reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.path
-        }
-        {
-          name: 'HUBCG'
-          value: cgName
-        }
-        {
-          name: 'EHOUTCSTR'
-          value: listKeys(ehoutNamespaceName_ehoutKey.id, '2022-10-01-preview').primaryConnectionString
-        }
-        {
-          name: 'EHOUTPATH'
-          value: ehoutHubName
-        }
-        */
-      ]
+      appSettings: appsettings
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
     }

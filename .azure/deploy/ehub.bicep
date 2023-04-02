@@ -1,5 +1,15 @@
-@description('Descriptor for this resource')
-param prefix string = 'ehub'
+//
+// Deploys an Azure Event Hub namespace
+//    with associated Event Hub
+//    with associated sending key
+// https://learn.microsoft.com/en-us/azure/event-hubs/
+//
+
+@description('Descriptor for the parent namespace resource')
+param prefix string = 'ehubns'
+
+@description('Descriptor for the hub resource')
+param hubname string = 'ehub'
 
 @description('Name of sending key')
 param keyname string = 'SendKey'
@@ -16,7 +26,7 @@ param sku string = 'Basic'
 @description('Number of provisioned units.')
 param capacity int = 1
 
-resource ehub 'Microsoft.EventHub/namespaces@2022-10-01-preview' = {
+resource namespace 'Microsoft.EventHub/namespaces@2022-10-01-preview' = {
   name: '${prefix}-${suffix}'
   location: location
   sku: {
@@ -36,7 +46,7 @@ resource ehub 'Microsoft.EventHub/namespaces@2022-10-01-preview' = {
 }
 
 resource key 'Microsoft.EventHub/namespaces/authorizationrules@2022-10-01-preview' = {
-  parent: ehub
+  parent: namespace
   name: keyname
   properties: {
     rights: [
@@ -45,5 +55,31 @@ resource key 'Microsoft.EventHub/namespaces/authorizationrules@2022-10-01-previe
   }
 }
 
-output keyid string = key.id
-output okey object = key
+resource ehub 'Microsoft.EventHub/namespaces/eventhubs@2022-10-01-preview' = {
+  parent: namespace
+  name: hubname
+  properties: {
+    retentionDescription: {
+      cleanupPolicy: 'Delete'
+      retentionTimeInHours: 1
+    }
+    messageRetentionInDays: 1
+    partitionCount: 2
+    status: 'Active'
+  }
+}
+
+output namespace object = {
+  name: namespace.name
+  id: namespace.id
+}
+
+output key object = {
+  name: key.name
+  id: key.id
+}
+
+output ehub object = {
+  name: ehub.name
+  id: ehub.id
+}
