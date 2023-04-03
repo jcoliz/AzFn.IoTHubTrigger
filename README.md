@@ -36,8 +36,8 @@ project. If you have saved off the deployment outputs from above as environment 
 ## Run IoTHubTrigger example in VS Code
 
 1. Ensure you have the Azure Functions VS Code extension installed
-2. Launch VS Code from within the IoTHubTrigger directory
-3. Create a local.settings.json, using the local.settings.template. Fill in the correct values from the deployment outputs as described in the template.
+2. Launch VS Code from within the `IoTHubTrigger` directory
+3. Create a `local.settings.json`, using the `local.settings.template`. Fill in the correct values from the deployment outputs as described in the template.
 4. Launch the app locally (F5)
 
 This simple example logs the details of each telemetry message coming from the IoT Hub.
