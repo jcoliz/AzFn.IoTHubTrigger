@@ -9,29 +9,38 @@ param suffix string = uniqueString(resourceGroup().id)
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Details for required storage resource (name/id)')
-param storage object
+@description('Name of required storage resource')
+param storageName string
 
-@description('Details for required IoTHub resource (name/id/host)')
-param iotHub object
+@description('Name of required IoTHub resource')
+param iotHubName string
 
 @description('Name of required input Consumer Group resource ')
 param cgInput string
 
-@description('Details for required output EventHub resource (name/id)')
+@description('Details for required output EventHub resource(s) (namespace/key/hub names)')
 param ehubOutput object
 
-@description('Details for required output EventHub namespace key (name/id)')
-param ehubKey object
+// Retrieve needed details out of IoTHub resource
+resource iotHub 'Microsoft.Devices/IotHubs@2021-07-02' existing = {
+  name: iotHubName
+}
+var iothubkey = iotHub.listkeys().value[0]
+
+// Retrieve needed details out of EventHub resource
+resource ehubKey 'Microsoft.EventHub/namespaces/authorizationrules@2022-10-01-preview' existing = {
+  name: '${ehubOutput.namespace}/${ehubOutput.key}'
+}
+var EHOUTCSTR = ehubKey.listKeys().primaryConnectionString
 
 var configuration = [
   {
     name: 'EVENTCSTR'
-    value: 'Endpoint=${reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.endpoint};SharedAccessKeyName=iothubowner;SharedAccessKey=${listKeys(iotHub.id, '2021-07-02').value[0].primaryKey};EntityPath=${reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.path}'
+    value: 'Endpoint=${iotHub.properties.eventHubEndpoints.events.endpoint};SharedAccessKeyName=${iothubkey.keyName};SharedAccessKey=${iothubkey.primaryKey};EntityPath=${iotHub.properties.eventHubEndpoints.events.path}'
   }
   {
     name: 'EVENTPATH'
-    value: reference(iotHub.id, '2021-07-02').eventHubEndpoints.events.path
+    value: iotHub.properties.eventHubEndpoints.events.path
   }
   {
     name: 'HUBCG'
@@ -39,18 +48,18 @@ var configuration = [
   }
   {
     name: 'EHOUTCSTR'
-    value: listKeys(ehubKey.id, '2022-10-01-preview').primaryConnectionString
+    value: EHOUTCSTR
   }
   {
     name: 'EHOUTPATH'
-    value: ehubOutput.name
+    value: ehubOutput.hub
   }
 ]
 
-module fn 'fn.bicep' = {
+module fn './AzDeploy.Bicep/Web/fn.bicep' = {
   name: 'fn'
   params: {
-    storage: storage
+    storageName: storageName
     suffix: suffix
     location: location
     configuration: configuration

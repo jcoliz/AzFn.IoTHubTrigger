@@ -13,7 +13,7 @@ param location string = resourceGroup().location
 @description('Short name of the input consumer group.')
 param cgName string = 'cg-azfn'
 
-module iotHub 'iothub.bicep' = {
+module iotHub './AzDeploy.Bicep/Devices/iothub.bicep' = {
   name: 'iotHub'
   params: {
     suffix: suffix
@@ -21,7 +21,7 @@ module iotHub 'iothub.bicep' = {
   }  
 }
 
-module cgInput 'ehubcg.bicep' = {
+module cgInput './AzDeploy.Bicep/Devices/iothubcg.bicep' = {
   name: cgName
   params: {
     name: cgName
@@ -29,16 +29,16 @@ module cgInput 'ehubcg.bicep' = {
   }
 }
 
-module dps 'dps.bicep' = {
+module dps './AzDeploy.Bicep/Devices/dps.bicep' = {
   name: 'dps'
   params: {
     suffix: suffix
     location: location
-    iotHub: iotHub.outputs.result
+    iotHubName: iotHub.outputs.result.name
   }
 }
 
-module storage 'storage.bicep' = {
+module storage './AzDeploy.Bicep/Storage/storage.bicep' = {
   name: 'storage'
   params: {
     suffix: suffix
@@ -46,7 +46,7 @@ module storage 'storage.bicep' = {
   }
 }
 
-module ehubOutput 'ehub.bicep' = {
+module ehubOutput './AzDeploy.Bicep/EventHub/ehub.bicep' = {
   name: 'ehubOutput'
   params: {
     suffix: suffix
@@ -57,11 +57,10 @@ module ehubOutput 'ehub.bicep' = {
 module fnthis 'fn-this.bicep' = {
   name: 'fnthis'
   params: {
-    storage: storage.outputs.result
-    iotHub: iotHub.outputs.result
+    storageName: storage.outputs.result.name
+    iotHubName: iotHub.outputs.result.name
     cgInput: cgName
-    ehubOutput: ehubOutput.outputs.ehub
-    ehubKey: ehubOutput.outputs.key    
+    ehubOutput: ehubOutput.outputs.result
     suffix: suffix
     location: location
   }
@@ -73,4 +72,4 @@ output _env_DPSNAME string = dps.outputs.result.name
 output _env_IDSCOPE string = dps.outputs.result.scope
 output _env_FNNAME string = fnthis.outputs.result.name
 output _env_STORNAME string = storage.outputs.result.name
-output _env_EHOUTPATH string = ehubOutput.outputs.namespace.name
+output _env_EHOUTPATH string = ehubOutput.outputs.result.hub
