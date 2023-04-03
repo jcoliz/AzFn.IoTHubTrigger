@@ -13,8 +13,9 @@ from an Azure IoT Hub, filter them, and output the results to a separate Event H
 
 ## Deploy Resources
 
-The included [ARM Template](/.azure/deploy/azuredeploy.json) deploys all of the resources described in the architecture diagram above.
-It also wires up the connections between services so everything is ready to go.
+The included [ARM Template](/.azure/deploy/azuredeploy.bicep) deploys all of the resources described in the architecture diagram above.
+It also wires up the connections between services so everything is ready to go. Be sure to clone this repo with submodules, as the 
+deployment template uses modules from the [AzDeploy.Bicep](https://github.com/jcoliz/AzDeploy.Bicep) project.
 
 Here's what you do...
 

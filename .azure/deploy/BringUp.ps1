@@ -5,4 +5,4 @@ if (-not (Test-Path env:RESOURCEGROUP))
 }
 
 az group create --name $env:RESOURCEGROUP --location "West US 2"
-az deployment group create --name "AzFn-$(Get-Random)" --resource-group $env:RESOURCEGROUP --template-file "azuredeploy.json"
+az deployment group create --name "AzFn-$(Get-Random)" --resource-group $env:RESOURCEGROUP --template-file "azuredeploy.bicep"
