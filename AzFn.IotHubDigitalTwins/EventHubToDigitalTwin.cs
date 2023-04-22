@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 //
 // Digital Twin insertion cribbed from 
@@ -68,24 +69,33 @@ namespace Company.Function
                             ((string)eventData.SystemProperties["dt-subject"]).StartsWith("Sensor")
                         )
                     {
-                        // Extract needed info
-                        var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
-                        var component = eventData.SystemProperties["dt-subject"];
-                        double temperature = ((System.Text.Json.JsonElement)body["Temperature"]).GetDouble();
-                        double humidity = ((System.Text.Json.JsonElement)body["Humidity"]).GetDouble();
-
-                        log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Temperature:{temperature} Humidity:{humidity}");
-
                         // Take telemetry values from telemetry message, and pass them along as property
                         // values, because that's what digital twins knows about
                         // TODO: This should also listen for device twin updates, and then patch ALL of the
                         // digital twin values.
 
-                        var updateTwinData = new JsonPatchDocument();
-                        updateTwinData.AppendReplace($"/{component}/CurrentTemperature", temperature);
-                        updateTwinData.AppendReplace($"/{component}/CurrentHumidity", humidity);
-                        await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
+                        var updateTwinData = new JsonPatchDocument(); 
+                        var component = eventData.SystemProperties["dt-subject"] as string;
 
+                        JsonElement? el = body["Temperature"] as JsonElement?;
+                        if (el.HasValue)
+                        {
+                            double value = el.Value.GetDouble();
+                            updateTwinData.AppendReplace($"/{component}/CurrentTemperature", value);
+                        }
+
+                        el = body["Humidity"] as JsonElement?;
+                        if (el.HasValue)
+                        {
+                            double value = el.Value.GetDouble();
+                            updateTwinData.AppendReplace($"/{component}/CurrentHumidity", value);
+                        }
+ 
+                        var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
+ 
+                        log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Patch:{updateTwinData}");
+                        await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
+ 
                         log.LogInformation("Sent update to digital twin");
                     }
 
