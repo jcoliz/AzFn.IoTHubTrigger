@@ -9,7 +9,7 @@ via IoT Hub.
 ## What's Here?
 
 * **Complete ARM Template**: Deploys an IoT Hub, DPS, Storage, Function App, and Digital Twins instance
-* **Azure Function Code Example**: Example code to map the device telemetry and properties coming from IoT Hub into the Digital Twins instance.
+* **Azure Function Code Example**: Maps the device telemetry and properties coming from IoT Hub into the Digital Twins instance.
 * **Azure Dev Ops Pipeline Definitions**: Ready-to-use pipelines to deploy the filter from your ADO project pipeline, into the function app deployed by the ARM Template.
 
 ## Steps to Set Up (Overview)
@@ -54,7 +54,7 @@ az dt twin create -n $env:TWINSNAME --dtmi "dtmi:com:aztwins:example_factory;1" 
 az dt twin relationship create -n $env:TWINSNAME --relationship-id has_device1 --relationship rel_has_devices --twin-id factory --target adt-device1
 ```
 
-Once this is done, load up the (Azure Digital Twins Explorer)[https://explorer.digitaltwins.azure.net/]. 
+Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.digitaltwins.azure.net/). 
 
 > TODO: Add an image
 
