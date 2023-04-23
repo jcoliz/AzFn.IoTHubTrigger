@@ -29,10 +29,12 @@ via IoT Hub.
 
 1. Find your user principal ID
 2. Change to the `deploy` directory
-3. Create a deployment parameters file containing that ID
+3. Create a deployment parameters file containing that ID, perhaps using the `azuredeploy.parameters.template.json` as an example.
 4. Set `$env:RESOURCEGROUP` to the name of a resource group you'd like to create and deploy into.
 5. Run the `BringUp.ps1` script. This creates the resource group, and starts a deployment.
-6. Review the `outputs` shown. I recommend saving each of these outputs into an environment variable, perhaps in an `.env.ps1` file, for easy reference. You can start with the `.env.template.ps1` as an example for what to save.
+6. Save the values of all `outputs` shown into evnvironment variables, perhaps in an `.env.ps1` file. For easy reference, you can start with the `.env.template.ps1` as an example for what to save.
+
+> TODO: Still need to add device twin updates route to hub deployment
 
 ## Create Models, Twins, and Relationships
 
@@ -61,6 +63,10 @@ Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.d
 ## Set up 3D Scenes Studio
 
 > TODO
+
+1. Add the example model (TODO: Link)
+2. Create Elements for each of the 6 robot arms
+3. Create Behaviors to show temperature and humidity
 
 ## Send data from the device client
 
