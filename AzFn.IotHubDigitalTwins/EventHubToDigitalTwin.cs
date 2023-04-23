@@ -56,47 +56,41 @@ namespace Company.Function
                     foreach (var kvp in eventData.SystemProperties)
                         log.LogInformation($"SP.{kvp.Key}: {kvp.Value}");
 
-                    // This is designed to handle messages for devices implementing "dtmi:azdevice:i2ctemphumiditymonitor;1".
-                    // See: https://github.com/jcoliz/AzDevice.IoTHubWorker/tree/main/examples/I2cTempHumidityMonitor
-                    //
-                    // However, it will work for any interface which implements components starting with "Sensor",
-                    // and implementing "Temperature" and "Humidity" telemetry, and also has properties "CurrentTemperature" and "CurrentHumidity"
-                    //
-                    // Note that the name of the device in IoT Hub needs to be the same as the corresponding digital twin ID
-                    if (
-                            eventData.SystemProperties.ContainsKey("dt-subject") 
-                            && 
-                            ((string)eventData.SystemProperties["dt-subject"]).StartsWith("Sensor")
-                        )
+                    // For all telemetry messages on all components (including the root), we will send the
+                    // data through to a Current{Name} property for each {Name} in the body.
+
+                    var source = eventData.SystemProperties["iothub-message-source"] as string;
+                    if (source == "Telemetry")
                     {
-                        // Take telemetry values from telemetry message, and pass them along as property
-                        // values, because that's what digital twins knows about
-                        // TODO: This should also listen for device twin updates, and then patch ALL of the
-                        // digital twin values.
+                        var updateTwinData = new JsonPatchDocument();
+                        string objectpath = "/";
+                        if (eventData.SystemProperties.ContainsKey("dt-subject"))
+                            objectpath += (eventData.SystemProperties["dt-subject"] as string) + "/";
 
-                        var updateTwinData = new JsonPatchDocument(); 
-                        var component = eventData.SystemProperties["dt-subject"] as string;
-
-                        JsonElement? el = body["Temperature"] as JsonElement?;
-                        if (el.HasValue)
+                        foreach (var kvp in body)
                         {
-                            double value = el.Value.GetDouble();
-                            updateTwinData.AppendReplace($"/{component}/CurrentTemperature", value);
+                            JsonElement? el = kvp.Value as JsonElement?;
+
+                            // This only deals with numbers right now, because that's all we need.
+                            // For the future, we could easily switch on ValueKind to do the right
+                            // thing for each value
+                            if (el.HasValue && el.Value.ValueKind == JsonValueKind.Number)
+                            {
+                                double value = el.Value.GetDouble();
+                                updateTwinData.AppendReplace($"{objectpath}Current{kvp.Key}", value);
+                            }
                         }
 
-                        el = body["Humidity"] as JsonElement?;
-                        if (el.HasValue)
-                        {
-                            double value = el.Value.GetDouble();
-                            updateTwinData.AppendReplace($"/{component}/CurrentHumidity", value);
-                        }
- 
                         var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
- 
+
                         log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Patch:{updateTwinData}");
                         await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
- 
-                        log.LogInformation("Sent update to digital twin");
+
+                        log.LogInformation("Sent telemetry update to digital twin");
+                    }
+                    else if (source == "twinChangeEvents")
+                    {
+                        // TODO: Create a property patch containing an update for EVERY reported property
                     }
 
                     await Task.Yield();
