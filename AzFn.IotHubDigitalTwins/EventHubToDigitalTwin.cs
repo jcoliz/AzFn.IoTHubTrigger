@@ -95,24 +95,7 @@ namespace Company.Function
                         // Create a property patch containing an update for EVERY reported property
                         JsonElement? properties = body["properties"] as JsonElement?;
                         JsonElement reported = properties.Value.GetProperty("reported");
-                        foreach(var el in reported.EnumerateObject())
-                        {
-                            if (!el.Name.StartsWith("$"))
-                            {
-                                var kind = el.Value.ValueKind;
-                                if (kind == JsonValueKind.String)
-                                {
-                                    string value = el.Value.GetString();
-                                    updateTwinData.AppendReplace($"/{el.Name}", value);
-                                }
-                                else if (kind == JsonValueKind.Number)
-                                {
-                                    double value = el.Value.GetDouble();
-                                    updateTwinData.AppendReplace($"/{el.Name}", value);
-                                }
-                            }
-                        }
-
+                        updateTwinData.Add(reported);
                         var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
 
                         log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Patch:{updateTwinData}");
@@ -140,5 +123,27 @@ namespace Company.Function
             if (exceptions.Count == 1)
                 throw exceptions.Single();
         }
+
+        private static void Add(this JsonPatchDocument patch, JsonElement outer)
+        {
+            foreach(var el in outer.EnumerateObject())
+            {
+                if (!el.Name.StartsWith("$"))
+                {
+                    var kind = el.Value.ValueKind;
+                    if (kind == JsonValueKind.String)
+                    {
+                        string value = el.Value.GetString();
+                        patch.AppendReplace($"/{el.Name}", value);
+                    }
+                    else if (kind == JsonValueKind.Number)
+                    {
+                        double value = el.Value.GetDouble();
+                        patch.AppendReplace($"/{el.Name}", value);
+                    }
+                }
+            }
+
+        } 
     }
 }
