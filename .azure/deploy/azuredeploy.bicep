@@ -66,12 +66,15 @@ module fnthis 'fn-this.bicep' = {
   }
 }
 
-output _env_HUBNAME string = iotHub.outputs.result.name
-output _env_HUBCG string = cgName
-output _env_DPSNAME string = dps.outputs.result.name
-output _env_IDSCOPE string = dps.outputs.result.scope
-output _env_FNNAME string = fnthis.outputs.result.name
-output _env_STORNAME string = storage.outputs.result.name
-output _env_EHOUTPATH string = ehubOutput.outputs.result.hub
-output _env_EVENTPATH string = iotHub.outputs.result.eventpath
-output _evv_EVENTENDP string = iotHub.outputs.result.endpoint
+output HUBNAME string = iotHub.outputs.result.name
+output HUBCG string = cgName
+output DPSNAME string = dps.outputs.result.name
+output IDSCOPE string = dps.outputs.result.scope
+output FNNAME string = fnthis.outputs.result.name
+output STORNAME string = storage.outputs.result.name
+output EHOUTPATH string = ehubOutput.outputs.result.hub
+output EVENTPATH string = iotHub.outputs.result.eventpath
+output EVENTENDP string = iotHub.outputs.result.endpoint
+
+// WARNING: This is a secret. Remove before using this in production!
+output EHOUTCSTR string = fnthis.outputs.ehoutcstr

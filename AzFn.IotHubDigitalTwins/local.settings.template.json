@@ -1,11 +1,11 @@
 {
     "IsEncrypted": false,
     "Values": {
-      "AzureWebJobsStorage": "Replace with output from: az storage account show-connection-string --name $env:STORNAME",
-      "EVENTPATH": "Replace with $env:EVENTPATH output from deployment",
-      "EVENTCSTR": "Replace with $env:EVENTCSTR output from deployment",
+      "AzureWebJobsStorage": "Replace with $env:STORCSTR, calculated after deployment",
+      "EVENTPATH": "Replace $env:EVENTPATH from deployment",
+      "EVENTCSTR": "Replace $env:EVENTCSTR from deployment",
       "ADT_SERVICE_URL": "Replace with $env:TWINSURL from deployment",
-      "HUBCG": "Replace with $env:HUBCG output from deployment",
+      "HUBCG": "Replace with $env:HUBCG from deployment",
       "FUNCTIONS_WORKER_RUNTIME": "dotnet"
     }
   }

@@ -5,14 +5,15 @@ $env:RESOURCEGROUP = "Name of resource group to deploy into"
 # These values are returned in the `outputs` section of the ARM deployment
 
 $env:HUBNAME = "Name of your IoTHub"
+$env:HUBCG = "Name of consumer group from IoT Hub to get data from"
 $env:EVENTCSTR = "Connection string to IoTHub's event hub"
 $env:EVENTPATH = "Entity Path for IoTHub's event hub"
 $env:DPSNAME = "Name of device provisioning service instance"
 $env:IDSCOPE = "ID Scope for this device provisioning service"
 $env:FNNAME = "Name of function app"
 $env:STORNAME = "Name of storage account"
-$env:EHOUTCSTR = "Connection string to output event hub"
-$env:EHOUTPATH = "Event path to output event hub"
+$env:TWINSNAME = "Name of Digital Twins resource"
+$env:TWINSURL = "Digital Twins service URL"
 
 # Find this value by running: `az iot hub connection-string show --hub-name $env:HUBNAME`
 

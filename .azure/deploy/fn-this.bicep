@@ -67,3 +67,4 @@ module fn './AzDeploy.Bicep/Web/fn.bicep' = {
 }
 
 output result object = fn.outputs.result
+output ehoutcstr string = EHOUTCSTR

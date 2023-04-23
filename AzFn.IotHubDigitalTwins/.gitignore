@@ -10,7 +10,7 @@ local.settings.json
 *.userosscache
 *.sln.docstates
 .env.ps1
-
+azuredeploy.parameters.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
