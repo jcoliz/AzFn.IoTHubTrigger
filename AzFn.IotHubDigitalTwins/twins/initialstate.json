@@ -1,0 +1,24 @@
+{
+    "SerialNumber": "",
+    "HeartbeatUTC": "2000-01-01T00:00:00",
+    "StartTimeUTC": "2000-01-01T00:00:00",
+    "TelemetryPeriod": "PT0S",
+    "Info": {
+        "$metadata": {},
+        "manufacturer": "",
+        "model": "",
+        "swVersion": "",
+        "osName": "",
+        "processorArchitecture": "",
+        "totalStorage": 0,
+        "totalMemory": 0
+    },
+    "Sensor_1": {
+        "$metadata": {},
+        "Id": 0,
+        "CurrentTemperature": 0,
+        "CurrentHumidity": 0,
+        "TemperatureCorrection": 0,
+        "HumidityCorrection": 0
+    }
+}

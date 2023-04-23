@@ -1,0 +1,41 @@
+{
+    "@context": "dtmi:dtdl:context;2",
+    "@id": "dtmi:com:aztwins:example_factory;1",
+    "@type": "Interface",
+    "displayName": "Example Factory - Interface Model",
+    "contents": [
+        {
+            "@type": "Property",
+            "name": "FactoryName",
+            "schema": "string",
+            "writable": true
+        },
+        {
+            "@type": "Property",
+            "name": "GeoLocation",
+            "schema": {
+                "@id": "dtmi:com:aztwins:example_factory:custom_schema:GeoCord;1",
+                "@type": "Object",
+                "fields": [
+                    {
+                        "@id": "dtmi:com:aztwins:example_factory:custom_schema:GeoCord:lat;1",
+                        "name": "Latitude",
+                        "schema": "double"
+                    },
+                    {
+                        "@id": "dtmi:com:aztwins:example_factory:custom_schema:GeoCord:lon;1",
+                        "name": "Longitude",
+                        "schema": "double"
+                    }
+                ]
+            }
+        },
+        {
+            "@type": "Relationship",
+            "@id": "dtmi:com:aztwins:example_factory:rel_has_devices;1",
+            "name": "rel_has_devices",
+            "displayName": "Has Devices",
+            "target": "dtmi:azdevice:i2ctemphumiditymonitor;1"
+        }
+    ]
+}
