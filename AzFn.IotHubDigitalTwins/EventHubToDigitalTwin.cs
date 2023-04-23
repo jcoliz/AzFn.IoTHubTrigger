@@ -114,7 +114,6 @@ namespace Company.Function
                         }
 
                         var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
-                        //var deviceId = "device4";
 
                         log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Patch:{updateTwinData}");
                         await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
