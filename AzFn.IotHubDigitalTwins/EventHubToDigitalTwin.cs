@@ -90,7 +90,37 @@ namespace Company.Function
                     }
                     else if (source == "twinChangeEvents")
                     {
-                        // TODO: Create a property patch containing an update for EVERY reported property
+                        var updateTwinData = new JsonPatchDocument();
+
+                        // Create a property patch containing an update for EVERY reported property
+                        JsonElement? properties = body["properties"] as JsonElement?;
+                        JsonElement reported = properties.Value.GetProperty("reported");
+                        foreach(var el in reported.EnumerateObject())
+                        {
+                            if (!el.Name.StartsWith("$"))
+                            {
+                                var kind = el.Value.ValueKind;
+                                if (kind == JsonValueKind.String)
+                                {
+                                    string value = el.Value.GetString();
+                                    updateTwinData.AppendReplace($"/{el.Name}", value);
+                                }
+                                else if (kind == JsonValueKind.Number)
+                                {
+                                    double value = el.Value.GetDouble();
+                                    updateTwinData.AppendReplace($"/{el.Name}", value);
+                                }
+                            }
+                        }
+
+                        var deviceId = eventData.SystemProperties["iothub-connection-device-id"] as string;
+                        //var deviceId = "device4";
+
+                        log.LogInformation($"Sending to Digital Twin for Device:{deviceId} Patch:{updateTwinData}");
+                        await client.UpdateDigitalTwinAsync(deviceId, updateTwinData);
+
+                        log.LogInformation("Sent properties update to digital twin");
+
                     }
 
                     await Task.Yield();
