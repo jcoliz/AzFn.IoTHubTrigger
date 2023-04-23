@@ -73,3 +73,5 @@ output _env_IDSCOPE string = dps.outputs.result.scope
 output _env_FNNAME string = fnthis.outputs.result.name
 output _env_STORNAME string = storage.outputs.result.name
 output _env_EHOUTPATH string = ehubOutput.outputs.result.hub
+output _env_EVENTPATH string = iotHub.outputs.result.eventpath
+output _evv_EVENTENDP string = iotHub.outputs.result.endpoint
