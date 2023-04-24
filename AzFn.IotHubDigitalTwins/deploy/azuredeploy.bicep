@@ -68,6 +68,16 @@ module iotHub '../../.azure/deploy/AzDeploy.Bicep/Devices/iothub.bicep' = {
   params: {
     suffix: suffix
     location: location
+    routes: [
+      {
+        name: 'TwinChangeEvents'
+        source: 'TwinChangeEvents'
+        endpointNames: [
+          'events'
+        ]
+        isEnabled: true
+      }
+    ]
   }  
 }
 

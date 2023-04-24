@@ -25,16 +25,19 @@ via IoT Hub.
 
 ## Deploy Azure Resources
 
-> This is an outline. More detail to follow
+The included [ARM Template](./deploy/azuredeploy.bicep) deploys all of the resources described in the architecture diagram above.
+It also wires up the connections between services so everything is ready to go. Be sure to clone this repo with submodules, as the 
+deployment template uses modules from the [AzDeploy.Bicep](https://github.com/jcoliz/AzDeploy.Bicep) project.
 
-1. Find your user principal ID
-2. Change to the `deploy` directory
-3. Create a deployment parameters file containing that ID, perhaps using the `azuredeploy.parameters.template.json` as an example.
-4. Set `$env:RESOURCEGROUP` to the name of a resource group you'd like to create and deploy into.
-5. Run the `BringUp.ps1` script. This creates the resource group, and starts a deployment.
-6. Save the values of all `outputs` shown into evnvironment variables, perhaps in an `.env.ps1` file. For easy reference, you can start with the `.env.template.ps1` as an example for what to save.
+Here's what you do...
 
-> TODO: Still need to add device twin updates route to hub deployment
+1. Open Powershell
+3. Change to the `deploy` directory
+2. Find your user principal ID
+4. Create a deployment parameters file containing that ID, perhaps using the `azuredeploy.parameters.template.json` as an example.
+5. Set `$env:RESOURCEGROUP` to the name of a resource group you'd like to create and deploy into.
+6. Run the `BringUp.ps1` script. This creates the resource group, and starts a deployment.
+7. Save the values of all `outputs` shown into evnvironment variables, perhaps in an `.env.ps1` file. For easy reference, you can start with the `.env.template.ps1` as an example for what to save.
 
 ## Create Models, Twins, and Relationships
 
@@ -50,15 +53,15 @@ Here's a snippet
 ```pwsh
 $DeviceModel = "dtmi:azdevice:i2ctemphumiditymonitor;1"
 az dt model create -n $env:TWINSNAME --models .\devicemodels.json
-az dt model create -n $env:TWINSNAME --models .\factoryfloormodel.json
-az dt twin create -n $env:TWINSNAME --dtmi $DeviceModel --twin-id 'adt-device1' --properties $Properties
+az dt model create -n $env:TWINSNAME --models .\factoryfloor.json
+az dt twin create -n $env:TWINSNAME --dtmi $DeviceModel --twin-id 'adt-device1' --properties '@initialstate.json'
 az dt twin create -n $env:TWINSNAME --dtmi "dtmi:com:aztwins:example_factory;1" --twin-id 'factory'
 az dt twin relationship create -n $env:TWINSNAME --relationship-id has_device1 --relationship rel_has_devices --twin-id factory --target adt-device1
 ```
 
-Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.digitaltwins.azure.net/). 
+Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.digitaltwins.azure.net/). Once the application is loaded, click "Run Query", which will load up a model of the twins to date.
 
-> TODO: Add an image
+![Twins Graph](../docs/images/twins-explorer.png)
 
 ## Set up 3D Scenes Studio
 
@@ -70,15 +73,15 @@ Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.d
 
 ## Send data from the device client
 
-This example is set up to use the `I2CTemperatureHumidityMonitor` example client from the `AzDevice.IoTHubWorker` project.
+This example is set up to use the [I2CTemperatureHumidityMonitor](https://github.com/jcoliz/AzDevice.IoTHubWorker/tree/main/examples/I2cTempHumidityMonitor) example client from the [AzDevice.IoTHubWorker](https://github.com/jcoliz/AzDevice.IoTHubWorker) project.
 Note that this example will send simulated data by default, so there's no need to build out the whole Raspberry Pi
 physical setup. However, if you DO build that out, it will work great with this example as well.
 
-1. Clone the project
+1. Clone the [AzDevice.IoTHubWorker](https://github.com/jcoliz/AzDevice.IoTHubWorker) project.
 2. Ensure you have environment variables set correcly from the `Deploy Azure Resources` step above.
-3. Provision a new device, named `adt-device1`. It's important that the device name match one of the digital twins created in the `Create Twins` step above.
-4. Copy the resuling `config.toml` file to the `examples/I2CTemperatureHumidityMonitor` directory.
-5. Run the example: `dotnet run`
+3. Follow the instructions there to [Create an Enrollment Group](https://github.com/jcoliz/AzDevice.IoTHubWorker/blob/main/docs/GettingStarted.md#create-an-enrollment-group).
+4. Then, [Enroll a Device](https://github.com/jcoliz/AzDevice.IoTHubWorker/blob/main/docs/GettingStarted.md#enroll-a-device) named `adt-device1`. It's important that the device name match one of the digital twins created in the `Create Twins` step above.
+5. Finally, [Build & Run the Device Software](https://github.com/jcoliz/AzDevice.IoTHubWorker/blob/main/docs/GettingStarted.md#buildrun-device-software), in this case, the `I2CTemperatureHumidityMonitor` example.
 
 This will start sending data up to your IoT Hub, matching the `dtmi:azdevice:i2ctemphumiditymonitor;1` DTMI.
 
@@ -92,17 +95,118 @@ The Azure Functions extension for Visual Studio is a great way to test out our f
 As long as the environment is set up correctly, the locally-running function can contact both the IoT Hub
 and Digital Twins instances we deployed earlier.
 
-1. Install the Visual Studio Extension for Azure Functions
-2. Open the `AzFn.IoTHubDigitalTwins` folder in Visual Studio Code.
+1. Install the [Visual Studio Extension for Azure Functions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions)
+2. Open the `AzFn.IoTHubDigitalTwins` folder from this project in Visual Studio Code.
 5. Create a `local.settings.json` file, based on the `local.settings.template.json` file.
-3. Fill in the details for your deployment.
+3. Fill in the details for your deployment, using values you previously saved during the "Deploy Azure Resources" step, above. 
 4. Launch the function with `F5`
 
-Keep an eye on the logs coming up in the terminal window.
+Keep an eye on the logs coming up in the terminal window. You'll see the output from the function when it's called:
 
-> TODO: Paste example logs
+```
+[2023-04-24T17:18:37.059Z] OK. EventHubToDigitalTwin function received message #3, enqueued at 4/24/2023 5:13:56 PM +00:00
+[2023-04-24T17:18:37.065Z] Temperature: 1713.57
+[2023-04-24T17:18:37.066Z] Humidity: 0.7139875
+[2023-04-24T17:18:37.067Z] SP.user-id: System.ReadOnlyMemory<Byte>[0]
+[2023-04-24T17:18:37.068Z] SP.content-type: application/json
+[2023-04-24T17:18:37.069Z] SP.content-encoding: utf-8
+[2023-04-24T17:18:37.069Z] SP.iothub-connection-device-id: adt-device1
+[2023-04-24T17:18:37.070Z] SP.iothub-connection-auth-method: {"scope":"device","type":"sas","issuer":"iothub","acceptingIpFilterRule":null}
+[2023-04-24T17:18:37.071Z] SP.iothub-connection-auth-generation-id: 1234567890
+[2023-04-24T17:18:37.072Z] SP.iothub-enqueuedtime: 4/24/2023 5:13:56 PM
+[2023-04-24T17:18:37.072Z] SP.iothub-message-source: Telemetry
+[2023-04-24T17:18:37.073Z] SP.dt-subject: Sensor_1
+[2023-04-24T17:18:37.074Z] SP.dt-dataschema: dtmi:azdevice:i2ctemphumiditymonitor;1
+[2023-04-24T17:18:37.075Z] SP.x-opt-sequence-number: 3
+[2023-04-24T17:18:37.076Z] SP.x-opt-offset: 3344
+[2023-04-24T17:18:37.076Z] SP.x-opt-enqueued-time: 4/24/2023 5:13:56 PM +00:00
+[2023-04-24T17:19:06.005Z] Sending to Digital Twin for Device:adt-device1 Patch:[{"op":"replace","path":"/Sensor_1/CurrentTemperature","value":1713.57},{"op":"replace","path":"/Sensor_1/CurrentHumidity","value":0.7139875}]
+[2023-04-24T17:19:20.081Z] OK. Sent update to digital twin
+```
 
 This function does three things:
 1. Prints the complete contents of the message to help us understand what's happening
 2. Translates telemetry messages to corresponding twin properties.
 3. Translates device twin updates containing reported properties into corresponding digital twin properties
+
+### Print message contents
+
+```c#
+                    var body = eventData.EventBody.ToObjectFromJson<Dictionary<string, object>>();
+                    foreach (var kvp in body)
+                        log.LogInformation($"{kvp.Key}: {kvp.Value}");
+
+                    foreach (var kvp in eventData.Properties)
+                        log.LogInformation($"P.{kvp.Key}: {kvp.Value}");
+
+                    foreach (var kvp in eventData.SystemProperties)
+                        log.LogInformation($"SP.{kvp.Key}: {kvp.Value}");
+```
+
+### Translate telemetry messages
+
+Digital twins only store properties, not telemetry values. Thus, my standard practice is to translate
+telemetry values into a corresponding `Current{Value}` property. Of course, this requires the model
+to have these properties.
+
+```c#
+    var source = eventData.SystemProperties["iothub-message-source"] as string;
+    if (source == "Telemetry")
+    {
+        updateTwinData = new JsonPatchDocument();
+        string objectpath = "/";
+        if (eventData.SystemProperties.ContainsKey("dt-subject"))
+            objectpath += (eventData.SystemProperties["dt-subject"] as string) + "/";
+
+        foreach (var kvp in body)
+        {
+            JsonElement? el = kvp.Value as JsonElement?;
+            if (el.HasValue && el.Value.ValueKind == JsonValueKind.Number)
+            {
+                double value = el.Value.GetDouble();
+                updateTwinData.AppendReplace($"{objectpath}Current{kvp.Key}", value);
+            }
+        }
+    }
+```
+
+### Translate reported properties directly
+
+The device code reports the current state of all properties regularly. When IoT Hub receives this update,
+it generates a device twin change event. The IoT Hub deployment in this example included a route to forward
+such events to the `events` endpoint. That's what the Azure Function is listening to, so we'll get those
+events in our function as well.
+
+```yaml
+    routes: [
+      {
+        name: 'TwinChangeEvents'
+        source: 'TwinChangeEvents'
+        endpointNames: [
+          'events'
+        ]
+        isEnabled: true
+      }
+    ]
+```
+
+Because the device is using the same model as the digital twin, we can simply pass along all the
+valid properties directly to the Digital Twin without modification.
+
+```c#
+    else if (source == "twinChangeEvents")
+    {
+        updateTwinData = new JsonPatchDocument();
+        JsonElement? properties = body["properties"] as JsonElement?;
+        JsonElement reported = properties.Value.GetProperty("reported");
+        updateTwinData.Add("/",reported);
+    }
+```
+
+## View twins in Digital Twins Explorer
+
+Once there is data flowing through, you can return to the Digital Twins Explorer to view the properties
+of your device. Click "Run Query" to refresh the twins, then click on "adt-device1" to see a panel of
+info for this device.
+
+![Twin Properties](../docs/images/twin-properties.png)
