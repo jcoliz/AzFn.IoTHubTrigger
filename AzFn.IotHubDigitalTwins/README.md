@@ -26,13 +26,14 @@ via IoT Hub.
 
 ## Find your User Principal ID
 
-[Setting up 3D Scenes Studio](https://learn.microsoft.com/en-us/azure/digital-twins/how-to-use-3d-scenes-studio) requires
-giving your Azure user access to the digitial twins instance and the blob storage container. The deployment templates
-will set up the access. You just need to find your principal ID, and provide it to the deployment. 
+Azure Digital Twins uses [role-based access control](https://learn.microsoft.com/en-us/azure/role-based-access-control/) to gatekeep access
+to an instance. Say goodbye to connection strings! This does mean if you personally want to interact directly with your twins
+instance, perhaps running the CLI or viewing it in the Data Explorer, you'll need to grant access to your User Principal on your
+instance.  
+
+The deployment templates will handle setting the correct roles. You just need to find your principal ID, and provide it to the deployment. 
 The [Permission Requirements](https://learn.microsoft.com/en-us/azure/digital-twins/how-to-set-up-instance-cli#prerequisites-permission-requirements)
 article is a good guide to finding this principal ID. Once you have, you'll supply it to the deployment steps below.
-
-> TODO: Separate principal ID deployment, such that the whole deployment could be done WITHOUT a principal ID, and then the principal ID could later be added when we want to work with 3D Scenes Studio. Then we can move the whole principal ID stuff to that article.
 
 ## Deploy Azure Resources
 

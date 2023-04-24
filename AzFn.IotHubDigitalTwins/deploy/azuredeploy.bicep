@@ -4,10 +4,10 @@ param suffix string = uniqueString(resourceGroup().id)
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Optional principal that will be given data owner permission for the Digital Twins and Blob Storage resources')
-param principalId string = ''
+@description('Principal that will be given data owner permission for the Digital Twins and Blob Storage resources')
+param principalId string
 
-@description('Optional type of the given principal id, if supplied')
+@description('Type of the given principal id, if supplied')
 param principalType string = 'User'
 
 @description('Short name of the input consumer group.')
@@ -21,7 +21,7 @@ module twins '../../.azure/deploy/AzDeploy.Bicep/DigitalTwins/digitaltwins.bicep
   }
 }
 
-module dataowner '../../.azure/deploy/AzDeploy.Bicep/DigitalTwins/dataownerrole.bicep' = if (!empty(principalId)) {
+module dataowner '../../.azure/deploy/AzDeploy.Bicep/DigitalTwins/dataownerrole.bicep' = {
   name: 'dataowner'
   params: {
     digitalTwinsName: twins.outputs.result.name
@@ -54,7 +54,7 @@ module container '../../.azure/deploy/AzDeploy.Bicep/Storage/storcontainer.bicep
   }
 }
 
-module blobcontributor '../../.azure/deploy/AzDeploy.Bicep/Storage/blobdatacontribrole.bicep' = if (!empty(principalId)) {
+module blobcontributor '../../.azure/deploy/AzDeploy.Bicep/Storage/blobdatacontribrole.bicep' = {
   name: 'blobcontributor'
   params: {
     containerFullName: container.outputs.result.name
