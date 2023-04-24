@@ -14,14 +14,25 @@ via IoT Hub.
 
 ## Steps to Set Up (Overview)
 
-1. Deploy Azure Resources
-2. Create models, twins, and relationships
-3. Set up 3D Scenes Studio (optional, but very cool)
-4. Send data from device client
-5. Run the Azure Function locally
-6. View twins in Digital Twins Explorer
-7. View twins in 3D Scenes Studio (optional)
-8. Set up Continuous Deployment in Azure Pipelines  
+1. Find your User Principal ID
+2. Deploy Azure Resources
+3. Create models, twins, and relationships
+4. Set up 3D Scenes Studio (optional, but very cool)
+5. Send data from device client
+6. Run the Azure Function locally
+7. View twins in Digital Twins Explorer
+8. View twins in 3D Scenes Studio (optional)
+9. Set up Continuous Deployment in Azure Pipelines  
+
+## Find your User Principal ID
+
+[Setting up 3D Scenes Studio](https://learn.microsoft.com/en-us/azure/digital-twins/how-to-use-3d-scenes-studio) requires
+giving your Azure user access to the digitial twins instance and the blob storage container. The deployment templates
+will set up the access. You just need to find your principal ID, and provide it to the deployment. 
+The [Permission Requirements](https://learn.microsoft.com/en-us/azure/digital-twins/how-to-set-up-instance-cli#prerequisites-permission-requirements)
+article is a good guide to finding this principal ID. Once you have, you'll supply it to the deployment steps below.
+
+> TODO: Separate principal ID deployment, such that the whole deployment could be done WITHOUT a principal ID, and then the principal ID could later be added when we want to work with 3D Scenes Studio. Then we can move the whole principal ID stuff to that article.
 
 ## Deploy Azure Resources
 
@@ -33,8 +44,7 @@ Here's what you do...
 
 1. Open Powershell
 3. Change to the `deploy` directory
-2. Find your user principal ID
-4. Create a deployment parameters file containing that ID, perhaps using the `azuredeploy.parameters.template.json` as an example.
+4. Create a deployment parameters file containing your user principal ID, perhaps using the `azuredeploy.parameters.template.json` as an example.
 5. Set `$env:RESOURCEGROUP` to the name of a resource group you'd like to create and deploy into.
 6. Run the `BringUp.ps1` script. This creates the resource group, and starts a deployment.
 7. Save the values of all `outputs` shown into evnvironment variables, perhaps in an `.env.ps1` file. For easy reference, you can start with the `.env.template.ps1` as an example for what to save.
@@ -65,11 +75,82 @@ Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.d
 
 ## Set up 3D Scenes Studio
 
-> TODO
+> TODO: Move all the 3D Scenes Studio stuff out to its own article
 
-1. Add the example model (TODO: Link)
-2. Create Elements for each of the 6 robot arms
-3. Create Behaviors to show temperature and humidity
+### Steps overview
+
+At a high level, here's what we'll need to do to set up 3D Scenes Studio for our example
+
+1. Import a 3D model
+2. Associate a unique 3D model mesh to each individual twins
+3. Choose what to display for each twin
+4. Apply the Behavior to all elements
+
+### Add the example model
+
+The key feature of 3D Scenes Studio is to visualize your Digital Twins environment in 3D form. You can import a model in [glTF](https://github.com/KhronosGroup/glTF). Blender works great to create and export these models. For our purpose, we can use the Robot Arms file provided in the documentation. Download it here: [Robot Arms glTF](https://cardboardresources.blob.core.windows.net/public/RobotArms.glb).
+
+1. Download the sample model locally
+2. From the main page of [3D Scenes Studio](https://explorer.digitaltwins.azure.net/3DScenes/), pick `Add new`.
+3. Give the scene a name, e.g. "Robot Arms". Pick the sample model from your local machine, and pick `Create`.
+
+### Create Elements for each robot arm
+
+The first step in working with a model here is to associate a unique mesh to each individual twin in your system.
+
+There are six robot arms in the model, so this example created six digital twins. For each one, you'll click on 
+a mesh in one of the robot arms, pick `Create new element` from the presented menu, choose of of the six twins from
+the list, and click `Create Element`. Now there is one visual display Element for each of the device twins in our
+system. 
+
+### Create a Behavior to display twin information 
+
+The Behavior for each twin describes what we want to show. We will create one behavior, applied to each of our elements.
+
+Here's what we want:
+
+1. A dashboard for each element showing the important information
+2. The current temperature displayed as a simple number on the dashboard 
+3. The current humidity shown as a gauge with green/yellow/red gradations
+4. A visual rule to set the overall element color based on the current humidity
+
+![Create a Behavior](../docs/images/twin-3d-behavior.png)
+
+First, we'll create the dashboard
+
+1. Click the `Behaviors` tab atop the editing pane on the left
+2. Click `New behavior`
+3. Give it a name, e.g. "Dashboard"
+4. Select all the elements from the `Elements` list. This will apply the behavior to all elements.
+
+Now, add the temperature 
+
+1. Click `Widgets`, then `Add Widgets`
+2. Pick a `Value` widget. 
+3. Assign to it the PrimaryTwin.Sensor_1.Temperature property. 
+4. Name it, and click Create Widget.
+
+![Temp Widget](../docs/images/twin-3d-temp-widget.png)
+
+Next, the humidity
+
+1. Again, click `Widgets`, then `Add Widgets`
+2. This time, pick a `Gauge` widget. 
+3. Choose the Sensor_1.Humidity property. 
+4. Add three ranges. Set the 0-0.5 range to Green color, 0.5-0.75 to Yellow, and 0.75 to infinity as Red. 
+5. Name it, and click Create Widget.
+
+![Humidity Widget](../docs/images/twin-3d-humidity-widget.png)
+
+Finally, the visual rules
+
+1. Click `Visual rules`, then `Add rule`
+2. Name it, e.g. "Status Color"
+3. Choose the Sensor_1.Humidity property.
+4. Add three conditions
+5. Match the values and color to the humidity gauge: 0-0.5 range to Green, 0.5-0.75 to Yellow, and 0.75 to infinity as Red.
+
+![Status Color](../docs/images/twin-3d-statuscolor.png)
 
 ## Send data from the device client
 
@@ -210,3 +291,13 @@ of your device. Click "Run Query" to refresh the twins, then click on "adt-devic
 info for this device.
 
 ![Twin Properties](../docs/images/twin-properties.png)
+
+## View twins in 3D Scenes Studio
+
+Now that data is flowing, you can use 3D Scenes Studio to get an overall status view of your whole
+system. In the picture below, we can quickly see that one machine is in a critical state, while the
+other five are all OK. Clicking on the one machine brings up my dashboard, where I can see that
+the humidity in this case is too high. The "All Properties" tab is available as well, if I want
+to dig into the details
+
+![Twin Properties](../docs/images/twin-3d-overview.png)
