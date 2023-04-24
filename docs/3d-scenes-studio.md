@@ -12,11 +12,11 @@ In this article, I wanted to give a step-by-step walkthrough of to harness the p
 ## Getting Started
 
 First, let's build up an Digital Twins instance, with data flowing in from IoT Devices connected to an IoT Hub.
-The [AzFn.IoTHubDigitalTwins](https://github.com/jcoliz/AzFn.IoTHubTrigger/tree/main/AzFn.IotHubDigitalTwins)
+The [AzFn.IoTHubDigitalTwins](https://github.com/jcoliz/AzFn.IoTHubTrigger/tree/main/AzFn.IotHubDigitalTwins) project
 will explain how to do this.
 
 That example uses the [I2CTemperatureHumidityMonitor](https://github.com/jcoliz/AzDevice.IoTHubWorker/tree/main/examples/I2cTempHumidityMonitor) example client from the [AzDevice.IoTHubWorker](https://github.com/jcoliz/AzDevice.IoTHubWorker) project in order to send data up to IoT Hub.
-Note that the sends simulated data by default, so there's no need to build out the whole Raspberry Pi
+It sends simulated data by default, so there's no need to build out the whole Raspberry Pi
 physical setup. However, if you DO build that out, it will work great with this example as well.
 
 ## Set up 3D Scenes Studio
@@ -65,7 +65,7 @@ First, we'll create the dashboard
 3. Give it a name, e.g. "Dashboard"
 4. Select all the elements from the `Elements` list. This will apply the behavior to all elements.
 
-Now, add the temperature 
+Now, add the temperature widget
 
 1. Click `Widgets`, then `Add Widgets`
 2. Pick a `Value` widget. 
@@ -74,11 +74,11 @@ Now, add the temperature
 
 ![Temp Widget](../docs/images/twin-3d-temp-widget.png)
 
-Next, the humidity
+Next, the humidity widget
 
 1. Again, click `Widgets`, then `Add Widgets`
 2. This time, pick a `Gauge` widget. 
-3. Choose the Sensor_1.Humidity property. 
+3. Choose the PrimaryTwin.Sensor_1.Humidity property. 
 4. Add three ranges. Set the 0-0.5 range to Green color, 0.5-0.75 to Yellow, and 0.75 to infinity as Red. 
 5. Name it, and click Create Widget.
 
@@ -106,3 +106,9 @@ the humidity in this case is too high. The "All Properties" tab is available as 
 to dig into the details.
 
 ![View Mode](../docs/images/twin-3d-overview.png)
+
+## Dig deeper
+
+The application comes with a Demo showing off the behaviors in great detail. It's available from the
+main navigation bar on the left edge of the screen. Dig through it and learn more about what this
+tool can do!
