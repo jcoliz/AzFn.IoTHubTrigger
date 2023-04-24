@@ -7,7 +7,7 @@ is an incredibly powerful way to understand what's going on in your system quick
 Using a 3D model of your environment, this tool connects this view with the real-life data flowing
 into your Digital Twin instance. Compared to a query view table, or even a typical text-heavy dashboard, this is a much more intuitive way to understand the data coming into your system. It also lets you spot trouble areas at a glance, while giving you the tools needed to dig in further.
 
-In this article, I wanted to give a step-by-step walkthrough to harnessing the power of this incredible tool.
+In this article, I wanted to give a step-by-step walkthrough of to harness the power of this incredible tool.
 
 ## Getting Started
 
@@ -21,14 +21,10 @@ physical setup. However, if you DO build that out, it will work great with this 
 
 ## Set up 3D Scenes Studio
 
-Launch [3D Scenes Studio](https://explorer.digitaltwins.azure.net/3dscenes/) to get started, then follow along as we get it working...
-
-### Steps overview
-
-At a high level, here's what we'll need to do to set up 3D Scenes Studio for our example
+Launch [3D Scenes Studio](https://explorer.digitaltwins.azure.net/3dscenes/) to get started, then follow along as we get it working! At a high level, here's what we'll need to do to set up 3D Scenes Studio for our example
 
 1. Import a 3D model
-2. Associate a unique 3D model mesh to each individual twins
+2. Associate a unique 3D model mesh to each individual twin
 3. Choose what to display for each twin
 4. Apply the Behavior to all elements
 
@@ -100,13 +96,13 @@ Finally, the visual rules
 
 ## Visualize your environment
 
-Now that you have data flowing in, and your environment is built, you can switch over to View mode to 
+Now that you have data flowing in, and your 3D scene is built, you can switch over to View mode to 
 get an overall status view of your whole
 system. 
 
 In the picture below, we can quickly see that one machine is in a critical state, while the
 other five are all OK. Clicking on the one machine brings up my dashboard, where I can see that
 the humidity in this case is too high. The "All Properties" tab is available as well, if I want
-to dig into the details
+to dig into the details.
 
 ![View Mode](../docs/images/twin-3d-overview.png)

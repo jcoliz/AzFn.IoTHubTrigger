@@ -51,8 +51,8 @@ Here's what you do...
 
 ## Create Models, Twins, and Relationships
 
-This example sets up 6 'device' digital twins, each reporting Temperature and Humidity. These are all contained within
-a 'factory' digial twin, which has a relationship containing each device.
+This example sets up 6 'device' digital twins, each reporting Temperature and Humidity. These are all related to
+a 'factory' digial twin, which maintains a relationship to each device.
 
 1. Change to the `twins` directory
 2. Ensure `$env:TWINSNAME` is set to the name of your Digital Twins instance
@@ -75,7 +75,7 @@ Once this is done, load up the [Azure Digital Twins Explorer](https://explorer.d
 
 ## Send data from the device client
 
-This example is set up to use the [I2CTemperatureHumidityMonitor](https://github.com/jcoliz/AzDevice.IoTHubWorker/tree/main/examples/I2cTempHumidityMonitor) example client from the [AzDevice.IoTHubWorker](https://github.com/jcoliz/AzDevice.IoTHubWorker) project.
+This example is set up work seamlessly with the [I2CTemperatureHumidityMonitor](https://github.com/jcoliz/AzDevice.IoTHubWorker/tree/main/examples/I2cTempHumidityMonitor) example client from the [AzDevice.IoTHubWorker](https://github.com/jcoliz/AzDevice.IoTHubWorker) project.
 Note that this example will send simulated data by default, so there's no need to build out the whole Raspberry Pi
 physical setup. However, if you DO build that out, it will work great with this example as well.
 
